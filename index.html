@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بوابة طلاب السنتر الرسمية | الأستاذة أمنية سعيد</title>
+    <meta name="description" content="بوابة طلاب السنتر الرسمية — حصرياً لطلاب سنتر الأستاذة أمنية سعيد الحضوريين. تسجيل حسابات الطلاب، سداد الاشتراك الشهري (50 ج)، استخراج استمارة القيد، وتفعيل الحساب على المنصة www.omnia-said.com بعد اعتماد الإدارة.">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-dark: #356B7A;
+            --primary-light: #B8DCE8;
+            --ice-blue: #E7F3F6;
+            --surface-bg: #F3FAFF;
+            --surface-white: #FFFFFF;
+            --soft-gray: #CDDCE4;
+            --dark-charcoal: #26343A;
+            --elegant-gold: #C9A96E;
+            --gold-bright: #dfbe82;
+
+            --bg-body: #1e282d;
+            --bg-card: #26343A;
+            --bg-card-elevated: #2f3f46;
+            --bg-card-subtle: rgba(184, 220, 232, 0.04);
+            --bg-input: #1b252a;
+            --bg-input-focus: #243238;
+
+            --gold: #C9A96E;
+            --gold-glow: rgba(201, 169, 110, 0.25);
+            --gold-subtle: rgba(201, 169, 110, 0.12);
+            --gold-border: rgba(201, 169, 110, 0.35);
+
+            --cyan: #B8DCE8;
+            --cyan-glow: rgba(184, 220, 232, 0.25);
+            --teal-accent: #356B7A;
+
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.25);
+            --rose: #ef4444;
+
+            --text-main: #F3FAFF;
+            --text-dim: #CDDCE4;
+            --text-faint: #8da1ab;
+            --border-main: #35474f;
+            --border-light: rgba(205, 220, 228, 0.12);
+
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+
+            --shadow-card: 0 14px 36px rgba(0, 0, 0, 0.35);
+            --transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --font-main: 'Cairo', sans-serif;
+            --font-heading: 'Tajawal', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #F3FAFF;
+            --bg-card: #FFFFFF;
+            --bg-card-elevated: #E7F3F6;
+            --bg-card-subtle: rgba(53, 107, 122, 0.03);
+            --bg-input: #FFFFFF;
+            --bg-input-focus: #F3FAFF;
+            --text-main: #26343A;
+            --text-dim: #455a64;
+            --text-faint: #78909c;
+            --border-main: #CDDCE4;
+            --border-light: rgba(53, 107, 122, 0.1);
+            --shadow-card: 0 12px 32px rgba(53, 107, 122, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.65;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chalkboard-backdrop {
+            position: fixed; inset: 0;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(53, 107, 122, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(201, 169, 110, 0.1) 0%, transparent 45%);
+            pointer-events: none; z-index: 0;
+        }
+
+        #chemistryNetwork {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; opacity: 0.5;
+        }
+
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 800; }
+        a { color: inherit; text-decoration: none; }
+        button, input, select, textarea { font-family: inherit; font-size: 15px; }
+        .container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 2; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            font-family: var(--font-heading); font-weight: 800; font-size: 15px; padding: 12px 24px;
+            border-radius: var(--radius-md); border: 1.5px solid transparent; cursor: pointer;
+            transition: var(--transition-smooth); text-decoration: none; white-space: nowrap;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #C9A96E 0%, #a88748 100%);
+            color: #172024; box-shadow: 0 6px 22px rgba(201, 169, 110, 0.35);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201, 169, 110, 0.5);
+            background: linear-gradient(135deg, #dfbe82 0%, #C9A96E 100%);
+        }
+        .btn-teal {
+            background: linear-gradient(135deg, #356B7A 0%, #254d58 100%);
+            color: #FFFFFF; box-shadow: 0 6px 20px #264d58;
+        }
+        .btn-teal:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(53, 107, 122, 0.45); }
+        .btn-emerald {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #FFFFFF; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+        .btn-emerald:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45); }
+        .btn-glass {
+            background: #26343A;
+            border-color: var(--border-light); color: var(--text-main);
+        }
+        .btn-glass:hover { background: #2f3f46; border-color: var(--gold-border); transform: translateY(-2px); }
+        .btn-sm { padding: 8px 16px; font-size: 13.5px; border-radius: var(--radius-sm); }
+        .btn-lg { padding: 15px 30px; font-size: 16px; border-radius: var(--radius-md); }
+        .btn-block { width: 100%; }
+
+        /* Site Header */
+        header.site-header {
+            position: sticky; top: 0; z-index: 100; padding: 14px 0;
+            background: #26343A;
+            border-bottom: 1px solid var(--border-light); transition: var(--transition-smooth);
+        }
+        .header-wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .brand-logo-area { display: flex; align-items: center; gap: 12px; }
+        .brand-logo-img {
+            width: 46px; height: 46px; border-radius: 14px; background: var(--gold-subtle);
+            border: 1.5px solid var(--gold-border); padding: 4px; object-fit: contain;
+        }
+        .brand-text h2 { font-size: 17px; color: var(--text-main); line-height: 1.2; }
+        .brand-text p { font-size: 12px; color: var(--gold-bright); font-weight: 700; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .theme-toggle-btn {
+            background: var(--bg-card); border: 1px solid var(--border-main); color: var(--text-dim);
+            width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        /* Center-only Notice Bar */
+        .center-only-notice {
+            background: linear-gradient(90deg, rgba(53,107,122,0.35), rgba(201,169,110,0.18));
+            border-bottom: 1px solid var(--gold-border); padding: 10px 0; position: relative; z-index: 5;
+        }
+        .center-only-notice .container { display: flex; align-items: center; gap: 12px; justify-content: center; flex-wrap: wrap; text-align: center; }
+        .center-only-notice i { color: var(--gold-bright); width: 19px; height: 19px; flex-shrink: 0; }
+        .center-only-notice span { font-size: 13px; font-weight: 800; color: var(--text-main); }
+        .center-only-notice span b { color: var(--gold-bright); }
+
+        /* Hero Banner */
+        .hero-banner-wrap { padding: 50px 0 45px; position: relative; z-index: 2; }
+        .hero-banner-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: center; }
+
+        .hero-title-highlight-box {
+            display: inline-flex; align-items: center; gap: 10px; background: #264d58;
+            border: 1.5px solid var(--primary-dark); padding: 6px 18px; border-radius: 12px; margin-bottom: 16px;
+        }
+        .hero-main-title { font-size: 38px; font-weight: 900; color: var(--cyan); line-height: 1.2; }
+        .hero-welcome-badge { font-size: 27px; font-weight: 900; color: #FFFFFF; margin-bottom: 14px; }
+        .hero-welcome-badge span { color: var(--gold-bright); }
+
+        .pulse-divider-wrap { display: flex; align-items: center; gap: 14px; margin: 14px 0 20px; max-width: 500px; }
+        .pulse-line { flex-grow: 1; height: 2px; background: linear-gradient(90deg, transparent, var(--border-light), transparent); }
+        .pulse-icon-box { color: var(--cyan); display: flex; align-items: center; justify-content: center; }
+
+        .hero-tagline-text { font-size: 17.5px; font-weight: 700; color: var(--cyan); margin-bottom: 8px; line-height: 1.6; }
+        .hero-subtagline-text {
+            font-size: 20px; font-weight: 900; color: var(--gold-bright); margin-bottom: 28px;
+            background: rgba(201, 169, 110, 0.1); display: inline-block; padding: 4px 14px; border-radius: 8px; border: 1px solid var(--gold-border);
+        }
+
+        .hero-action-buttons { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 30px; }
+        .hero-quick-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+        .quick-badge-item {
+            background: #26343A; border: 1px solid var(--border-light); padding: 7px 14px;
+            border-radius: var(--radius-full); font-size: 12.5px; font-weight: 700; color: var(--text-dim); display: flex; align-items: center; gap: 6px;
+        }
+        .quick-badge-item i { color: var(--gold-bright); width: 15px; height: 15px; }
+
+        .hero-visual-card { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .hero-teacher-frame {
+            position: relative; width: 300px; height: 330px; border-radius: 26px; overflow: hidden;
+            border: 3px solid var(--gold-border); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 35px var(--gold-glow); background: #192327;
+        }
+        .hero-teacher-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-sticker-badge {
+            margin-top: -26px; position: relative; z-index: 5; background: linear-gradient(135deg, #FFFFFF 0%, #F3FAFF 100%);
+            color: #26343A; border: 3px solid var(--primary-dark); padding: 10px 24px; border-radius: 18px;
+            font-family: var(--font-heading); font-weight: 900; font-size: 18px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); text-align: center;
+        }
+        .hero-sticker-badge span.sub { display: block; font-size: 12px; color: var(--primary-dark); font-weight: 800; }
+
+        /* Video Tutorial Section */
+        .video-section { padding: 60px 0; position: relative; z-index: 2; }
+        .video-card-container {
+            background: var(--bg-card); border: 1.5px solid var(--border-main); border-radius: var(--radius-lg);
+            padding: 30px; box-shadow: var(--shadow-card); display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 30px; align-items: center;
+        }
+        .video-frame-wrap {
+            position: relative; width: 100%; padding-top: 56.25%;
+            background: #000; border-radius: var(--radius-md); overflow: hidden; border: 2px solid var(--border-light);
+        }
+        .video-frame-wrap iframe, .video-frame-wrap video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+        .video-instructions-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+        .video-instruction-item {
+            display: flex; gap: 14px; align-items: flex-start;
+        }
+        .instruction-number {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--primary-dark); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; flex-shrink: 0;
+        }
+        .instruction-text h4 { font-size: 15px; margin-bottom: 2px; color: var(--text-main); }
+        .instruction-text p { font-size: 13px; color: var(--text-dim); }
+
+        /* Grades Section */
+        .section-block { padding: 60px 0; position: relative; z-index: 2; }
+        .section-header { text-align: center; max-width: 680px; margin: 0 auto 40px; }
+        .section-tag { display: inline-block; color: var(--gold-bright); font-weight: 800; font-size: 13.5px; margin-bottom: 6px; }
+        .section-title { font-size: 30px; margin-bottom: 12px; font-weight: 900; }
+        .section-desc { color: var(--text-dim); font-size: 15.5px; }
+
+        .grades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grade-card {
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: var(--radius-lg);
+            padding: 26px 22px; transition: var(--transition-smooth); display: flex; flex-direction: column;
+        }
+        .grade-card:hover { transform: translateY(-5px); border-color: var(--primary-dark); }
+        .grade-icon {
+            width: 52px; height: 52px; border-radius: 16px; background: var(--gold-subtle); color: var(--gold);
+            display: flex; align-items: center; justify-content: center; margin-bottom: 16px; border: 1px solid var(--gold-border);
+        }
+        .grade-card h3 { font-size: 20px; margin-bottom: 8px; }
+        .grade-card p { font-size: 13.5px; color: var(--text-dim); margin-bottom: 18px; flex-grow: 1; }
+        .grade-subjects-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+        .subject-pill {
+            background: #2f3f46; border: 1px solid var(--border-light); padding: 4px 10px;
+            border-radius: var(--radius-full); font-size: 12px; font-weight: 700; color: var(--cyan);
+        }
+        .fee-badge {
+            background: var(--gold-subtle); border: 1px solid var(--gold-border); color: var(--gold-bright);
+            padding: 8px 12px; border-radius: var(--radius-md); font-size: 13px; font-weight: 800;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+        }
+
+        /* Modals & Registration */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(10,16,19,0.95);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 14px;
+            opacity: 0; transition: opacity 0.3s ease; overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-card {
+            background: var(--bg-card); border: 1px solid var(--border-main); border-radius: var(--radius-lg);
+            width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); position: relative; margin: auto;
+        }
+        .modal-header {
+            padding: 18px 24px; border-bottom: 1px solid var(--border-main); display: flex;
+            align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg-card); z-index: 10;
+        }
+        .modal-close-btn {
+            background: var(--bg-input); border: 1px solid var(--border-main); color: var(--text-dim);
+            width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .modal-body { padding: 24px; }
+
+        .stepper-header { display: flex; align-items: center; justify-content: space-between; position: relative; margin-bottom: 26px; }
+        .stepper-track-bg { position: absolute; top: 18px; right: 30px; left: 30px; height: 3px; background: var(--border-main); z-index: 0; }
+        .stepper-track-fill { position: absolute; top: 18px; right: 30px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--cyan)); z-index: 1; transition: width 0.35s ease; width: 0%; }
+        .step-pill { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+        .step-circle {
+            width: 36px; height: 36px; border-radius: 50%; background: var(--bg-input); border: 2px solid var(--border-main);
+            color: var(--text-dim); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;
+        }
+        .step-pill.active .step-circle { background: var(--gold); border-color: var(--gold-bright); color: #172024; box-shadow: 0 0 18px var(--gold-glow); }
+        .step-pill.completed .step-circle { background: var(--emerald); border-color: var(--emerald); color: #ffffff; }
+        .step-title { font-size: 11.5px; font-weight: 700; color: var(--text-dim); }
+        .step-pill.active .step-title { color: var(--gold-bright); }
+
+        .step-pane { display: none; }
+        .step-pane.active { display: block; animation: fadeInPane 0.3s ease; }
+        @keyframes fadeInPane { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; color: var(--text-main); }
+        .form-group label span.req { color: var(--rose); margin-right: 4px; }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-wrap .input-icon { position: absolute; right: 14px; color: var(--text-faint); pointer-events: none; width: 18px; height: 18px; }
+        .form-control {
+            width: 100%; padding: 12px 42px 12px 14px; background: var(--bg-input); border: 1.5px solid var(--border-main);
+            border-radius: var(--radius-sm); color: var(--text-main); font-size: 14.5px; transition: var(--transition-smooth);
+        }
+        .form-control:focus { outline: none; border-color: var(--gold); background: var(--bg-input-focus); box-shadow: 0 0 0 3px var(--gold-subtle); }
+        .toggle-pwd-btn { position: absolute; left: 12px; background: none; border: none; color: var(--text-faint); cursor: pointer; }
+
+        .photo-upload-container {
+            display: flex; gap: 16px; align-items: center; background: var(--bg-card-subtle); border: 2px dashed var(--border-main);
+            border-radius: var(--radius-md); padding: 16px; cursor: pointer;
+        }
+        .photo-preview-box {
+            width: 80px; height: 95px; border-radius: 10px; background: var(--bg-input); border: 1.5px solid var(--border-main);
+            overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .photo-preview-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 18px; }
+        .option-choice-card {
+            background: var(--bg-input); border: 1.5px solid var(--border-main); border-radius: var(--radius-sm); padding: 12px 14px;
+            cursor: pointer; display: flex; align-items: center; gap: 10px; transition: var(--transition-smooth);
+        }
+        .option-choice-card.selected { border-color: var(--gold); background: var(--gold-subtle); box-shadow: 0 0 16px var(--gold-glow); }
+        .option-choice-card .choice-icon { color: var(--gold); width: 20px; height: 20px; flex-shrink: 0; }
+
+        /* Dynamic month grid inside step 2 */
+        #monthDynamicGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        #monthDynamicGrid .option-choice-card {
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-main);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+        #monthDynamicGrid .option-choice-card.selected {
+            border-color: var(--gold);
+            background: var(--gold-subtle);
+            box-shadow: 0 0 16px var(--gold-glow);
+        }
+        #monthDynamicGrid .option-choice-card .choice-icon { color: var(--gold); width: 18px; height: 18px; flex-shrink: 0; }
+
+        .payment-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+        .payment-method-card {
+            position: relative; background: var(--bg-input); border: 1.5px solid var(--border-main); border-radius: var(--radius-md); padding: 16px;
+            cursor: pointer; display: flex; flex-direction: column; gap: 10px; transition: var(--transition-smooth);
+        }
+        .payment-method-card:hover { border-color: var(--gold-border); transform: translateY(-2px); }
+        .payment-method-card.selected { border-color: var(--gold); background: var(--gold-subtle); box-shadow: 0 8px 22px var(--gold-glow); }
+        .payment-method-card .pm-check {
+            position: absolute; top: 10px; left: 10px; width: 20px; height: 20px; border-radius: 50%;
+            border: 1.5px solid var(--border-main); background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+        }
+        .payment-method-card.selected .pm-check { background: var(--gold); border-color: var(--gold-bright); color: #172024; }
+        .payment-method-card.selected .pm-check i { display: block !important; }
+        .payment-method-card .pm-check i { display: none; width: 13px; height: 13px; }
+        .payment-number-row {
+            display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);
+            padding: 8px 12px; border-radius: 8px; font-family: monospace; color: var(--gold-bright); font-size: 14.5px;
+        }
+        .payment-copy-btn {
+            background: none; border: none; color: var(--gold); cursor: pointer; font-weight: 700; font-size: 12.5px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .payment-notice-box {
+            display: flex; align-items: flex-start; gap: 10px; background: var(--bg-card-subtle); border: 1.5px solid var(--border-main);
+            border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 18px;
+        }
+        .payment-notice-box i { color: var(--cyan); width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px; }
+        .payment-notice-box p { font-size: 12.5px; color: var(--text-dim); line-height: 1.7; }
+
+        .hourglass-wrapper { position: relative; width: 95px; height: 115px; margin: 0 auto 20px; }
+        .hourglass-svg { width: 100%; height: 100%; animation: flipHourglass 4s infinite cubic-bezier(0.65, 0, 0.35, 1); transform-origin: center center; }
+        @keyframes flipHourglass { 0%, 40% { transform: rotate(0deg); } 50%, 90% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
+
+        /* Official Certificate */
+        .cert-modal-card { max-width: 820px; background: #ffffff; color: #1e293b; padding: 0; margin: auto; max-height: 90vh; display: flex; flex-direction: column; }
+        .cert-scroll-area { overflow-y: auto; padding: 20px; flex-grow: 1; }
+        #officialCertificate {
+            background: #ffffff; color: #1e293b; padding: 30px; position: relative; box-sizing: border-box;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #f8fafc, #ffffff);
+            background-size: 20px 20px, 100% 100%; border: 6px double #356B7A; border-radius: 8px;
+        }
+        .cert-watermark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0.05; pointer-events: none; }
+        .cert-watermark img { width: 300px; height: 300px; object-fit: contain; }
+
+        .cert-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5px solid #356B7A; padding-bottom: 14px; margin-bottom: 18px; }
+        .cert-header-right h4 { font-size: 15px; color: #356B7A; font-weight: 900; }
+        .cert-header-right p { font-size: 11.5px; color: #475569; font-weight: 700; }
+        .cert-title-ar { font-size: 20px; font-weight: 900; color: #356B7A; font-family: var(--font-heading); }
+        .cert-title-en { font-size: 10.5px; color: #64748b; font-weight: 700; letter-spacing: 1px; }
+
+        .cert-body { display: grid; grid-template-columns: 160px 1fr; gap: 20px; margin-bottom: 18px; }
+        .cert-photo-frame { width: 140px; height: 175px; border: 2px solid #356B7A; border-radius: 8px; background: #f8fafc; overflow: hidden; position: relative; }
+        .cert-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .cert-stamp-overlay { position: absolute; bottom: 6px; right: 6px; left: 6px; background: rgba(53, 107, 122, 0.9); color: #ffffff; font-size: 9.5px; font-weight: 800; text-align: center; padding: 2px 0; border-radius: 4px; }
+
+        .cert-table-wrap { border: 1.5px solid #cbd5e1; border-radius: 6px; overflow: hidden; background: #ffffff; }
+        .cert-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .cert-table tr { border-bottom: 1px solid #e2e8f0; }
+        .cert-table td { padding: 8px 10px; vertical-align: middle; }
+        .cert-table td.field-name { width: 34%; background: #f1f5f9; color: #334155; font-weight: 800; border-left: 1px solid #e2e8f0; }
+        .cert-table td.field-val { color: #0f172a; font-weight: 800; }
+        .cert-table td.field-val.highlight { color: #356B7A; font-weight: 900; }
+
+        .cert-status-ribbon {
+            background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; padding: 8px 14px; border-radius: 6px;
+            font-size: 13.5px; font-weight: 900; text-align: center; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .cert-footer { display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 18px; border-top: 1.5px solid #cbd5e1; padding-top: 14px; align-items: center; }
+        .cert-action-bar { background: #26343A; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border-main); }
+
+        /* Footer */
+        .site-footer {
+            background: var(--bg-card); border-top: 1px solid var(--border-main); padding: 30px 0 22px;
+            margin-top: auto; position: relative; z-index: 2;
+        }
+        .footer-content-wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+        .footer-brand-info h4 { font-size: 15px; margin-bottom: 3px; }
+        .footer-brand-info p { font-size: 12.5px; color: var(--text-dim); }
+
+        .developer-credit-box {
+            display: flex; flex-direction: column; align-items: center; gap: 4px; background: #26343A;
+            border: 1px solid var(--border-light); padding: 8px 16px; border-radius: var(--radius-md);
+        }
+        .dev-badge-title { font-size: 11px; font-weight: 800; color: var(--gold-bright); }
+        .dev-logo-img { height: 42px; object-fit: contain; }
+
+        #toastStack { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast {
+            background: #26343A; color: #FFFFFF; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+            padding: 10px 18px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); font-size: 13.5px; font-weight: 700; pointer-events: auto;
+        }
+        .toast.success { border-color: var(--emerald); color: #86efac; }
+        .toast.error { border-color: var(--rose); color: #fca5a5; }
+
+        @media (max-width: 992px) {
+            .hero-banner-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-welcome-badge { justify-content: center; }
+            .pulse-divider-wrap { margin: 14px auto 18px; }
+            .hero-action-buttons { justify-content: center; }
+            .hero-quick-badges { justify-content: center; }
+            .video-card-container { grid-template-columns: 1fr; }
+            .grades-grid { grid-template-columns: 1fr; }
+            .footer-content-wrap { justify-content: center; text-align: center; }
+        }
+        @media (max-width: 640px) {
+            .hero-main-title { font-size: 28px; }
+            .hero-welcome-badge { font-size: 20px; }
+            .hero-tagline-text { font-size: 15px; }
+            .hero-subtagline-text { font-size: 16px; }
+            .hero-teacher-frame { width: 240px; height: 260px; }
+            .hero-sticker-badge { font-size: 15px; padding: 8px 16px; }
+            .payment-method-grid { grid-template-columns: 1fr; }
+            .cert-body { grid-template-columns: 1fr; }
+            .cert-photo-frame { margin: 0 auto; }
+            .cert-footer { grid-template-columns: 1fr; text-align: center; }
+            #officialCertificate { padding: 16px 12px; border-width: 3px; }
+            .btn-lg { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chalkboard-backdrop"></div>
+    <canvas id="chemistryNetwork"></canvas>
+
+    <div id="toastStack"></div>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-wrap">
+            <a href="#" class="brand-logo-area">
+                <img src="assets/logo.png" alt="شعار المنصة" class="brand-logo-img">
+                <div class="brand-text">
+                    <h2>بوابة طلاب السنتر الرسمية</h2>
+                    <p>الأستاذة أمنية سعيد — لطلاب السنتر فقط</p>
+                </div>
+            </a>
+
+            <div class="header-actions">
+                <button class="theme-toggle-btn" id="themeToggleBtn" title="تبديل المظهر">
+                    <i data-lucide="sun" class="light-icon" style="display:none;"></i>
+                    <i data-lucide="moon" class="dark-icon"></i>
+                </button>
+                <button class="btn btn-glass btn-sm" onclick="openLookupModal()">
+                    <i data-lucide="search" style="width:16px;height:16px;"></i>
+                    <span>متابعة حالة حسابي</span>
+                </button>
+                <button class="btn btn-gold btn-sm" onclick="openRegistrationModal()">
+                    <i data-lucide="user-plus" style="width:16px;height:16px;"></i>
+                    <span>تقديم طلب قيد</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="center-only-notice">
+        <div class="container">
+            <i data-lucide="shield-alert"></i>
+            <span>تنبيه هام: هذه البوابة مخصصة حصرياً لـ <b>طلاب السنتر الحضوريين</b> المسجلين فعلياً بمقرات السنتر — <b>لا يجوز لطلاب الأونلاين التسجيل من خلالها</b>.</span>
+        </div>
+    </div>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero-banner-wrap">
+            <div class="container hero-banner-grid">
+
+                <div class="hero-text-col">
+                    <div class="hero-title-highlight-box">
+                        <i data-lucide="sparkles" style="color:var(--gold-bright); width:18px; height:18px;"></i>
+                        <span class="hero-main-title">الأستاذة / أمنية سعيد</span>
+                    </div>
+
+                    <div class="hero-welcome-badge">
+                        #أهلا ـ بيك ـ ياصديقي ـ في ـ <span>عيلتنا</span>
+                    </div>
+
+                    <div class="pulse-divider-wrap">
+                        <div class="pulse-line"></div>
+                        <div class="pulse-icon-box">
+                            <svg width="32" height="16" viewBox="0 0 36 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 9H9L13 2L18 16L23 9H35" stroke="#B8DCE8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="pulse-line"></div>
+                    </div>
+
+                    <p class="hero-tagline-text">
+                        أساسك القوي في الكيمياء والفيزياء والعلوم هو مفتاح تفوقك في الثانوية العامة
+                    </p>
+                    <div class="hero-subtagline-text">
+                        معانا إلى الدرجة النهائية وما بعدها !
+                    </div>
+
+                    <div class="hero-action-buttons">
+                        <button class="btn btn-gold btn-lg" onclick="openRegistrationModal()">
+                            <i data-lucide="file-badge-2"></i>
+                            <span>تقديم طلب قيد طالب بالسنتر (50 ج.م)</span>
+                        </button>
+                        <button class="btn btn-glass btn-lg" onclick="openLookupModal()">
+                            <i data-lucide="user-check"></i>
+                            <span>متابعة حالة الحساب وتسجيل الدخول</span>
+                        </button>
+                    </div>
+
+                    <div class="hero-quick-badges">
+                        <div class="quick-badge-item"><i data-lucide="coins"></i><span>اشتراك موحد: 50 ج شهرياً</span></div>
+                        <div class="quick-badge-item"><i data-lucide="award"></i><span>استمارة قيد رسمية معتمدة</span></div>
+                        <div class="quick-badge-item"><i data-lucide="globe"></i><span>www.omnia-said.com</span></div>
+                    </div>
+                </div>
+
+                <div class="hero-visual-card">
+                    <div class="hero-teacher-frame">
+                        <img src="assets/teacher.png" alt="الأستاذة أمنية سعيد">
+                    </div>
+                    <div class="hero-sticker-badge">
+                        الكيمياء والفيزياء مع أمنية سعيد
+                        <span class="sub">خبير ومعد المادة للثانوية العامة</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIDEO TUTORIAL SECTION -->
+        <section class="video-section">
+            <div class="container">
+                <div class="video-card-container">
+
+                    <div class="video-frame-wrap">
+                        <iframe id="tutorialVideoIframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" title="فيديو شرح طريقة استخدام المنصة وتفعيل الحساب" allowfullscreen></iframe>
+                    </div>
+
+                    <div class="video-info-content">
+                        <div class="section-tag" style="color:var(--cyan);">فيديو توضيحي</div>
+                        <h3 style="font-size:24px; margin-bottom:10px;">طريقة التقديم وتفعيل حسابك على المنصة</h3>
+                        <p style="font-size:14px; color:var(--text-dim);">
+                            شاهد الفيديو لمعرفة خطوات تقديم طلب القيد، سداد الاشتراك، وطريقة الدخول لمنصة الأستاذة الرسمية فور اعتماد الحساب.
+                        </p>
+
+                        <ul class="video-instructions-list">
+                            <li class="video-instruction-item">
+                                <div class="instruction-number">1</div>
+                                <div class="instruction-text">
+                                    <h4>تقديم طلب القيد ورفع الإيصال</h4>
+                                    <p>أدخل بياناتك وصورتك الشخصية، وحوّل 50 ج عبر إنستاباي أو فودافون كاش.</p>
+                                </div>
+                            </li>
+                            <li class="video-instruction-item">
+                                <div class="instruction-number">2</div>
+                                <div class="instruction-text">
+                                    <h4>استخراج استمارة القيد الرسمية</h4>
+                                    <p>احفظ الاستمارة على هاتفك وأظهرها عند حضور حصص السنتر.</p>
+                                </div>
+                            </li>
+                            <li class="video-instruction-item">
+                                <div class="instruction-number">3</div>
+                                <div class="instruction-text">
+                                    <h4>تسجيل الدخول على المنصة الرسمية</h4>
+                                    <p>بعد اعتماد الإدارة لحسابك، ادخل على <b>www.omnia-said.com</b> برقم هاتفك وكلمة مرورك.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Grades Section -->
+        <section class="section-block" id="grades">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">المراحل الدراسية</span>
+                    <h2 class="section-title">اختر صفك الدراسي لتقديم طلب القيد</h2>
+                    <p class="section-desc">متابعة شاملة لجميع المحاضرات والمذكرات بالسنتر وعلى المنصة الرسمية.</p>
+                </div>
+
+                <div class="grades-grid">
+                    <div class="grade-card">
+                        <div class="grade-icon"><i data-lucide="sparkles"></i></div>
+                        <h3>الصف الأول الثانوي</h3>
+                        <p>تأسيس شامل في منهج العلوم المتكاملة بالنظام الحديث مع تدريبات دورية مستمرة.</p>
+                        <div class="grade-subjects-pills">
+                            <span class="subject-pill">علوم متكاملة</span>
+                            <span class="subject-pill">جميع السناتر</span>
+                        </div>
+                        <div class="fee-badge"><span>رسوم الاشتراك الشهري</span><b>50 ج.م فقط</b></div>
+                        <button class="btn btn-teal btn-block" onclick="openRegistrationModal('الصف الأول الثانوي', 'علوم متكاملة')">
+                            <span>تقديم طلب التحاق</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                        </button>
+                    </div>
+
+                    <div class="grade-card" style="border-color:var(--gold-border);">
+                        <div class="grade-icon" style="background:var(--gold-subtle); color:var(--gold-bright);"><i data-lucide="atom"></i></div>
+                        <h3>الصف الثاني الثانوي</h3>
+                        <p>شرح تفصيلي ومبسط لكورسات الفيزياء والكيمياء مع مذكرات احترافية وامتحانات دورية.</p>
+                        <div class="grade-subjects-pills">
+                            <span class="subject-pill">فيزياء</span>
+                            <span class="subject-pill">كيمياء</span>
+                        </div>
+                        <div class="fee-badge"><span>رسوم الاشتراك الشهري</span><b>50 ج.م فقط</b></div>
+                        <button class="btn btn-gold btn-block" onclick="openRegistrationModal('الصف الثاني الثانوي')">
+                            <span>تقديم طلب التحاق</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                        </button>
+                    </div>
+
+                    <div class="grade-card">
+                        <div class="grade-icon" style="background:rgba(53, 107, 122, 0.25); color:var(--cyan);"><i data-lucide="graduation-cap"></i></div>
+                        <h3>الصف الثالث الثانوي</h3>
+                        <p>برنامج الثانوية العامة الشامل: أقوى شروحات الفيزياء والكيمياء وورش حل الامتحانات.</p>
+                        <div class="grade-subjects-pills">
+                            <span class="subject-pill">فيزياء</span>
+                            <span class="subject-pill">كيمياء</span>
+                        </div>
+                        <div class="fee-badge"><span>رسوم الاشتراك الشهري</span><b>50 ج.م فقط</b></div>
+                        <button class="btn btn-teal btn-block" onclick="openRegistrationModal('الصف الثالث الثانوي')">
+                            <span>تقديم طلب التحاق</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER WITH DEVELOPER LOGO -->
+    <footer class="site-footer">
+        <div class="container footer-content-wrap">
+            <div class="footer-brand-info">
+                <h4>بوابة طلاب السنتر الرسمية — الأستاذة أمنية سعيد</h4>
+                <p>المنصة الرسمية: <a href="https://www.omnia-said.com" target="_blank" style="color:var(--gold-bright); font-weight:800;">www.omnia-said.com</a> — جميع الحقوق محفوظة © 2026</p>
+                <p style="margin-top:6px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+                    <a href="#" onclick="openPoliciesModal('terms'); return false;" style="font-size:12px; font-weight:800; color:var(--cyan);">الشروط والأحكام</a>
+                    <a href="#" onclick="openPoliciesModal('payment'); return false;" style="font-size:12px; font-weight:800; color:var(--cyan);">سياسة الدفع</a>
+                    <a href="#" onclick="openPoliciesModal('refund'); return false;" style="font-size:12px; font-weight:800; color:var(--cyan);">سياسة الاسترداد</a>
+                </p>
+            </div>
+
+            <div class="developer-credit-box">
+                <span class="dev-badge-title">تطوير المنصة</span>
+                <img src="assets/developer_logo.png" alt="زياد الدوري — مبرمج ومصمم جرافيك" class="dev-logo-img">
+            </div>
+        </div>
+    </footer>
+
+    <!-- REGISTRATION MODAL -->
+    <div class="modal-overlay" id="regModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="user-plus" style="color:var(--gold);"></i><span>طلب إنشاء حساب وقيد طالب سنتر</span></h3>
+                <button class="modal-close-btn" onclick="closeRegistrationModal()"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="stepper-header">
+                    <div class="stepper-track-bg"></div>
+                    <div class="stepper-track-fill" id="stepperFill"></div>
+                    <div class="step-pill active" id="stepPill1"><div class="step-circle">1</div><div class="step-title">البيانات والهوية</div></div>
+                    <div class="step-pill" id="stepPill2"><div class="step-circle">2</div><div class="step-title">الصف والسنتر</div></div>
+                    <div class="step-pill" id="stepPill3"><div class="step-circle">3</div><div class="step-title">الاشتراك والدفع</div></div>
+                    <div class="step-pill" id="stepPill4"><div class="step-circle">4</div><div class="step-title">المراجعة</div></div>
+                </div>
+
+                <!-- STEP 1 -->
+                <div class="step-pane active" id="stepPane1">
+                    <div style="display:flex; align-items:flex-start; gap:10px; background:var(--gold-subtle); border:1.5px solid var(--gold-border); border-radius:var(--radius-md); padding:12px 14px; margin-bottom:18px;">
+                        <i data-lucide="shield-alert" style="color:var(--gold-bright); width:20px; height:20px; flex-shrink:0; margin-top:2px;"></i>
+                        <p style="font-size:12.5px; color:var(--text-dim); line-height:1.7;">
+                            هذا النموذج مخصص فقط <b style="color:var(--gold-bright);">لطلاب السنتر الحضوريين</b>. برجاء عدم التقديم إذا كنت طالباً أونلاين وغير مقيد فعلياً بأحد مقرات السنتر.
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label>الاسم الرباعي للطالب بالكامل <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="user" class="input-icon"></i>
+                            <input type="text" id="inpFullName" class="form-control" placeholder="أدخل اسمك رباعياً باللغة العربية">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div class="form-group">
+                            <label>رقم هاتف الطالب (11 رقم) <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <i data-lucide="phone" class="input-icon"></i>
+                                <input type="tel" id="inpStudentPhone" class="form-control" placeholder="01xxxxxxxxx" maxlength="11">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم هاتف ولي الأمر (11 رقم) <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <i data-lucide="phone-call" class="input-icon"></i>
+                                <input type="tel" id="inpParentPhone" class="form-control" placeholder="01xxxxxxxxx" maxlength="11">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>كلمة السر لحسابك على المنصة <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="inpPassword" class="form-control" placeholder="ستسجل بها دخولك على المنصة لاحقاً">
+                            <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('inpPassword', this)"><i data-lucide="eye" style="width:18px;height:18px;"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الصورة الشخصية الرسمية للطالب <span class="req">*</span></label>
+                        <input type="file" id="inpStudentPhoto" accept="image/*" style="display:none;" onchange="handleStudentPhoto(this.files[0])">
+                        <div class="photo-upload-container" id="photoDropArea" onclick="document.getElementById('inpStudentPhoto').click()">
+                            <div class="photo-preview-box">
+                                <img id="photoPreviewImg" alt="معاينة الصورة الشخصية">
+                                <div class="photo-preview-placeholder" id="photoPlaceholder">
+                                    <i data-lucide="camera" style="width:26px;height:26px;margin-bottom:2px;"></i>
+                                    <span style="font-size:11px;font-weight:700;">صورة الطالب</span>
+                                </div>
+                            </div>
+                            <div class="photo-upload-info">
+                                <h4 style="font-size:14px;">انقر لاختيار صورتك الشخصية</h4>
+                                <p style="font-size:12px; color:var(--text-dim);">مطلوبة للتحقق من هوية الطالب وإصدار استمارة القيد.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+                        <button class="btn btn-gold" onclick="goToStep(2)"><span>التالي: اختيار الصف والسنتر</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div class="step-pane" id="stepPane2">
+                    <div class="form-group">
+                        <label>الصف الدراسي <span class="req">*</span></label>
+                        <div class="options-grid" id="gradeSelectorGrid">
+                            <div class="option-choice-card selected" onclick="selectGrade(this, 'الصف الأول الثانوي')"><i data-lucide="sparkles" class="choice-icon"></i><h5>الصف الأول الثانوي</h5></div>
+                            <div class="option-choice-card" onclick="selectGrade(this, 'الصف الثاني الثانوي')"><i data-lucide="atom" class="choice-icon"></i><h5>الصف الثاني الثانوي</h5></div>
+                            <div class="option-choice-card" onclick="selectGrade(this, 'الصف الثالث الثانوي')"><i data-lucide="graduation-cap" class="choice-icon"></i><h5>الصف الثالث الثانوي</h5></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>المادة المقيدة <span class="req">*</span></label>
+                        <div class="options-grid" id="subjectSelectorGrid">
+                            <div class="option-choice-card selected" onclick="selectSubject(this, 'علوم متكاملة')"><i data-lucide="flask-conical" class="choice-icon"></i><h5>علوم متكاملة</h5></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>مقر السنتر المقيد به <span class="req">*</span></label>
+                        <div class="options-grid" id="centerSelectorGrid">
+                            <div class="option-choice-card selected" onclick="selectCenter(this, 'سنتر البيان')"><i data-lucide="building-2" class="choice-icon"></i><h5>سنتر البيان</h5></div>
+                            <div class="option-choice-card" onclick="selectCenter(this, 'Golden Academy')"><i data-lucide="building" class="choice-icon"></i><h5>Golden Academy</h5></div>
+                            <div class="option-choice-card" onclick="selectCenter(this, 'مقر المنصة الرئيسي')"><i data-lucide="school" class="choice-icon"></i><h5>مقر المنصة الرئيسي</h5></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>اختر الشهر / الكورس الذي ترغب في الاشتراك به <span class="req">*</span></label>
+                        <div id="monthDynamicGrid"></div>
+                        <p style="font-size:11.5px; color:var(--text-faint); margin-top:2px;">
+                            <i data-lucide="info" style="width:12px;height:12px;position:relative;top:2px;"></i>
+                            تظهر هنا الأشهر والكورسات المتاحة لصفك الدراسي. سيتم تفعيل الشهر المختار بعد اعتماد الإدارة.
+                        </p>
+                    </div>
+
+                    <div style="background:linear-gradient(135deg, rgba(201,169,110,0.12), rgba(53,107,122,0.12)); border:1.5px solid var(--gold-border); border-radius:var(--radius-md); padding:16px; display:flex; justify-content:space-between; align-items:center;">
+                        <div><h4 style="font-size:15px; color:var(--gold-bright);">رسوم الاشتراك الشهري الموحد</h4><p style="font-size:12.5px; color:var(--text-dim);">تشمل الوصول لكافة المحاضرات والمذكرات على المنصة للشهر المختار فور اعتماد الحساب.</p></div>
+                        <div style="font-size:24px; font-weight:900; color:var(--gold-bright);">50 <span style="font-size:14px;">ج.م</span></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                        <button class="btn btn-glass" onclick="goToStep(1)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i><span>السابق</span></button>
+                        <button class="btn btn-gold" onclick="goToStep(3)"><span>التالي: سداد الاشتراك</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div class="step-pane" id="stepPane3">
+                    <div class="payment-notice-box">
+                        <i data-lucide="info"></i>
+                        <p>حوّل قيمة الاشتراك الشهري <b style="color:var(--gold-bright);">50 ج.م فقط</b> على الرقم الموضح، ثم ارفع صورة إيصال التحويل. لن يتم تفعيل حسابك إلا بعد تدقيق الإيصال واعتماده من إدارة السنتر.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>اختر وسيلة تحويل الاشتراك الشهري (50 ج.م) <span class="req">*</span></label>
+                        <div class="payment-method-grid">
+                            <div class="payment-method-card selected" onclick="selectPaymentMethod(this, 'instapay')">
+                                <div class="pm-check"><i data-lucide="check"></i></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <b>InstaPay</b><img src="assets/instapay.png" alt="Instapay" style="height:26px;">
+                                </div>
+                                <div class="payment-number-row">
+                                    <span>01066781928</span>
+                                    <button type="button" class="payment-copy-btn" onclick="copyText('01066781928', 'تم نسخ الرقم')"><i data-lucide="copy" style="width:13px;height:13px;"></i><span>نسخ</span></button>
+                                </div>
+                            </div>
+
+                            <div class="payment-method-card" onclick="selectPaymentMethod(this, 'vodafone_cash')">
+                                <div class="pm-check"><i data-lucide="check"></i></div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <b>Vodafone Cash</b><img src="assets/vodafone.png" alt="Vodafone" style="height:26px;">
+                                </div>
+                                <div class="payment-number-row">
+                                    <span>01066781928</span>
+                                    <button type="button" class="payment-copy-btn" onclick="copyText('01066781928', 'تم نسخ الرقم')"><i data-lucide="copy" style="width:13px;height:13px;"></i><span>نسخ</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>رفع صورة إثبات تحويل الـ 50 ج.م <span class="req">*</span></label>
+                        <input type="file" id="inpReceiptPhoto" accept="image/*" style="display:none;" onchange="handleReceiptPhoto(this.files[0])">
+                        <div class="photo-upload-container" id="receiptDropArea" onclick="document.getElementById('inpReceiptPhoto').click()">
+                            <div class="photo-preview-box">
+                                <img id="receiptPreviewImg" alt="معاينة إيصال التحويل">
+                                <div class="photo-preview-placeholder" id="receiptPlaceholder">
+                                    <i data-lucide="receipt" style="width:26px;height:26px;margin-bottom:2px;"></i>
+                                    <span style="font-size:11px;font-weight:700;">إيصال الدفع</span>
+                                </div>
+                            </div>
+                            <div class="photo-upload-info">
+                                <h4 style="font-size:14px;">انقر لرفع سكرين شوت إيصال التحويل</h4>
+                                <p style="font-size:12px; color:var(--text-dim);">يجب أن تظهر تفاصيل العملية ورقم التحويل وقيمة 50 ج.م بوضوح.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                        <button class="btn btn-glass" onclick="goToStep(2)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i><span>السابق</span></button>
+                        <button class="btn btn-gold" onclick="goToStep(4)"><span>التالي: مراجعة وتأكيد</span><i data-lucide="arrow-left" style="width:16px;height:16px;"></i></button>
+                    </div>
+                </div>
+
+                <!-- STEP 4 -->
+                <div class="step-pane" id="stepPane4">
+                    <h4 style="font-size:16px; margin-bottom:12px; color:var(--gold-bright);">مراجعة وتأكيد بيانات طلب القيد</h4>
+                    <div style="background:var(--bg-card-subtle); border:1px solid var(--border-main); border-radius:var(--radius-md); padding:16px; margin-bottom:18px; font-size:13.5px; line-height:2;">
+                        <div>الاسم: <b id="revFullName">-</b></div>
+                        <div>هاتف الطالب: <b id="revStudentPhone">-</b></div>
+                        <div>هاتف ولي الأمر: <b id="revParentPhone">-</b></div>
+                        <div>الصف والمادة: <b id="revGrade">-</b> (<b id="revSubject">-</b>)</div>
+                        <div>مقر السنتر: <b id="revCenter">-</b></div>
+                        <div>الشهر / الكورس المختار: <b id="revMonth" style="color:var(--gold-bright);">-</b></div>
+                        <div>رسوم الاشتراك الشهري: <b style="color:var(--gold-bright);">50 ج.م</b></div>
+                    </div>
+
+                    <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:var(--text-dim); margin-bottom:6px; cursor:pointer;">
+                        <input type="checkbox" id="inpAgreeTerms" style="margin-top:3px;">
+                        <span>أقر بأنني طالب حضوري بالسنتر، وأوافق على <a href="#" onclick="openPoliciesModal('terms'); return false;" style="color:var(--gold-bright); font-weight:800; text-decoration:underline;">الشروط والأحكام</a> و<a href="#" onclick="openPoliciesModal('payment'); return false;" style="color:var(--gold-bright); font-weight:800; text-decoration:underline;">سياسة الدفع</a> و<a href="#" onclick="openPoliciesModal('refund'); return false;" style="color:var(--gold-bright); font-weight:800; text-decoration:underline;">سياسة الاسترداد</a>.</span>
+                    </label>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                        <button class="btn btn-glass" onclick="goToStep(3)"><i data-lucide="arrow-right" style="width:16px;height:16px;"></i><span>السابق</span></button>
+                        <button class="btn btn-gold btn-lg" id="btnSubmitRegistration" onclick="submitStudentRegistration()">
+                            <i data-lucide="send" style="width:18px;height:18px;"></i>
+                            <span>تأكيد وإرسال طلب القيد</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST-SUBMISSION STATUS (HOURGLASS) -->
+    <div class="modal-overlay" id="statusModal">
+        <div class="modal-card" style="max-width:520px;">
+            <div class="modal-body" style="text-align:center; padding:28px 16px;">
+                <div class="hourglass-wrapper">
+                    <svg class="hourglass-svg" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 10 H80 V25 C80 45 55 55 55 60 C55 65 80 75 80 95 V110 H20 V95 C20 75 45 65 45 60 C45 55 20 45 20 25 Z" stroke="#C9A96E" stroke-width="4" fill="rgba(201, 169, 110, 0.05)" stroke-linejoin="round"/>
+                        <rect x="12" y="5" width="76" height="8" rx="4" fill="#a88748"/>
+                        <rect x="12" y="107" width="76" height="8" rx="4" fill="#a88748"/>
+                        <path d="M26 25 Q50 30 74 25 C74 42 55 52 50 58 C45 52 26 42 26 25 Z" fill="#dfbe82"/>
+                        <line x1="50" y1="58" x2="50" y2="95" stroke="#dfbe82" stroke-width="2.5" stroke-dasharray="4 2"/>
+                        <path d="M26 104 Q50 82 74 104 Z" fill="#dfbe82"/>
+                    </svg>
+                </div>
+
+                <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(201, 169, 110, 0.15); border:1.5px solid var(--gold-border); color:var(--gold-bright); padding:6px 18px; border-radius:20px; font-weight:800; margin-bottom:14px;">
+                    <i data-lucide="clock-4" style="width:16px;height:16px;"></i>
+                    <span>طلبك قيد المراجعة والتدقيق</span>
+                </div>
+
+                <h2 style="font-size:22px; margin-bottom:8px;">تم استلام طلب قيدك بنجاح!</h2>
+                <p style="color:var(--text-dim); font-size:13.5px; max-width:420px; margin:0 auto 18px;">
+                    جاري تدقيق الصورة الشخصية وإيصال الدفع من إدارة السنتر لتفعيل حسابك على المنصة الرسمية <b>www.omnia-said.com</b>. تم إصدار استمارتك الرسمية.
+                </p>
+
+                <div style="background:var(--bg-input); border:1px solid var(--border-main); border-radius:var(--radius-md); padding:12px; max-width:360px; margin:0 auto 20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:right;">
+                    <div><div style="font-size:11px;color:var(--text-dim);">الرقم التسلسلي</div><div id="submittedSerialNum" style="font-size:15px;font-weight:900;color:var(--gold-bright);font-family:monospace;">SN-00001</div></div>
+                    <div><div style="font-size:11px;color:var(--text-dim);">كود الطالب</div><div id="submittedStudentCode" style="font-size:15px;font-weight:900;color:var(--gold-bright);font-family:monospace;">1001</div></div>
+                    <div style="grid-column:1/-1;"><div style="font-size:11px;color:var(--text-dim);">الشهر المطلوب تفعيله</div><div id="submittedMonthName" style="font-size:15px;font-weight:900;color:var(--cyan);">-</div></div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="btn btn-gold btn-lg btn-block" onclick="openCertificateModalFromCurrent()">
+                        <i data-lucide="file-badge"></i>
+                        <span>عرض استمارة الطلب الرسمية (معتمدة)</span>
+                    </button>
+                    <button class="btn btn-glass btn-block" onclick="closeStatusModal()">إغلاق والعودة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OFFICIAL CERTIFICATE MODAL -->
+    <div class="modal-overlay" id="certModal">
+        <div class="modal-card cert-modal-card">
+
+            <div class="cert-scroll-area">
+                <div id="officialCertificate">
+                    <div class="cert-watermark"><img src="assets/logo.png" alt="Watermark"></div>
+
+                    <div class="cert-header">
+                        <div class="cert-header-right">
+                            <h4>منصة وسنتر الأستاذة أمنية سعيد</h4>
+                            <p>مادة الفيزياء والكيمياء والعلوم المتكاملة</p>
+                            <p>قسم شؤون وقيد طلاب السنتر</p>
+                        </div>
+
+                        <div class="cert-header-center">
+                            <img src="assets/logo.png" alt="Logo" class="cert-eagle-logo" style="width:50px;height:50px;">
+                            <div class="cert-title-ar">استمارة قيد وتوثيق طالب سنتر</div>
+                            <div class="cert-title-en">CENTER STUDENT REGISTRATION CERTIFICATE</div>
+                        </div>
+
+                        <div class="cert-header-left">
+                            <div style="font-family:monospace;font-size:16px;font-weight:900;color:#C9A96E;" id="certSerialDisplay">SN-00001</div>
+                            <div style="font-size:11.5px;color:#475569;" id="certDateDisplay">التاريخ: 2026/08/22</div>
+                        </div>
+                    </div>
+
+                    <div class="cert-body">
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                            <div class="cert-photo-frame">
+                                <img id="certStudentPhoto" src="assets/teacher.png" alt="صورة الطالب">
+                                <div class="cert-stamp-overlay">صورة معتمدة رسمياً</div>
+                            </div>
+                            <span style="font-size:10.5px;font-weight:800;color:#356B7A;">الصورة الشخصية للطالب</span>
+                        </div>
+
+                        <div class="cert-table-wrap">
+                            <table class="cert-table">
+                                <tbody>
+                                    <tr><td class="field-name">الاسم الرباعي للطالب</td><td class="field-val" id="certFullName">-</td></tr>
+                                    <tr><td class="field-name">رقم هاتف الطالب</td><td class="field-val" id="certStudentPhone">-</td></tr>
+                                    <tr><td class="field-name">رقم هاتف ولي الأمر</td><td class="field-val" id="certParentPhone">-</td></tr>
+                                    <tr><td class="field-name">الصف الدراسي</td><td class="field-val" id="certGrade">-</td></tr>
+                                    <tr><td class="field-name">المادة المقيد بها</td><td class="field-val" id="certSubject">-</td></tr>
+                                    <tr><td class="field-name">مقر السنتر</td><td class="field-val" id="certCenter">-</td></tr>
+                                    <tr><td class="field-name">الشهر / الكورس المختار</td><td class="field-val" style="color:#356B7A;" id="certCourseName">-</td></tr>
+                                    <tr><td class="field-name">الاشتراك الشهري</td><td class="field-val highlight">50 جنيه مصري (مسددة بالكامل)</td></tr>
+                                    <tr><td class="field-name">كود الطالب الموحد</td><td class="field-val" style="color:#C9A96E;" id="certStudentCode">1001</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cert-status-ribbon">
+                        <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+                        <span id="certStatusText">طلب قيد معتمد ومسجل رسميًا بسجلات المنصة والسنتر</span>
+                    </div>
+
+                    <div class="cert-footer">
+                        <div>
+                            <svg id="certBarcodeSvg"></svg>
+                            <p style="font-size:9.5px;color:#64748b;margin-top:4px;">* تعتبر هذه الاستمارة وثيقة رسمية صادرة عن سنتر ومنصة الأستاذة أمنية سعيد تفيد قيد الطالب وسداد رسوم الاشتراك الشهري المقررة (50 ج.م).</p>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;">
+                            <div style="width:70px;height:70px;border:2px dashed #C9A96E;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C9A96E;text-align:center;font-size:8.5px;font-weight:900;transform:rotate(-10deg);">
+                                ختم الاعتماد<br>منصة أمنية سعيد
+                            </div>
+                            <div id="certQrContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cert-action-bar">
+                <button class="btn btn-glass btn-sm" onclick="closeCertificateModal()"><i data-lucide="x"></i><span>إغلاق</span></button>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-teal btn-sm" onclick="window.print()"><i data-lucide="printer"></i><span>طباعة</span></button>
+                    <button class="btn btn-gold btn-sm" id="btnDownloadCertPng" onclick="downloadCertificateAsImage()"><i data-lucide="download"></i><span>تحميل كصورة (PNG)</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOOKUP / ACCOUNT STATUS MODAL (WITH DIRECT LOGIN TO WWW.OMNIA-SAID.COM) -->
+    <div class="modal-overlay" id="lookupModal">
+        <div class="modal-card" style="max-width:520px;">
+            <div class="modal-header">
+                <h3><i data-lucide="user-check" style="color:var(--cyan);"></i><span>متابعة حالة الحساب وتسجيل الدخول</span></h3>
+                <button class="modal-close-btn" onclick="closeLookupModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>رقم هاتف الطالب المسجل <span class="req">*</span></label>
+                    <input type="tel" id="lookupPhone" class="form-control" placeholder="01xxxxxxxxx" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label>كود الطالب أو الرقم التسلسلي <span class="req">*</span></label>
+                    <input type="text" id="lookupCode" class="form-control" placeholder="مثال: 1001 أو 00001">
+                </div>
+                <button class="btn btn-gold btn-block" id="btnLookupSubmit" onclick="performLookupQuery()" style="margin-top:10px;">
+                    <i data-lucide="search"></i><span>فحص حالة الحساب</span>
+                </button>
+                <div id="lookupResultBox" style="display:none; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-main);"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POLICIES MODAL: TERMS / PAYMENT / REFUND (Detailed) -->
+    <div class="modal-overlay" id="policiesModal">
+        <div class="modal-card" style="max-width:720px;">
+            <div class="modal-header">
+                <h3><i data-lucide="file-check-2" style="color:var(--gold);"></i><span>الشروط والأحكام وسياسات المنصة</span></h3>
+                <button class="modal-close-btn" onclick="closePoliciesModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;">
+                    <button class="btn btn-glass btn-sm policy-tab-btn" id="policyTabBtn-terms" onclick="switchPolicyTab('terms')"><i data-lucide="scroll-text" style="width:15px;height:15px;"></i><span>الشروط والأحكام</span></button>
+                    <button class="btn btn-glass btn-sm policy-tab-btn" id="policyTabBtn-payment" onclick="switchPolicyTab('payment')"><i data-lucide="credit-card" style="width:15px;height:15px;"></i><span>سياسة الدفع</span></button>
+                    <button class="btn btn-glass btn-sm policy-tab-btn" id="policyTabBtn-refund" onclick="switchPolicyTab('refund')"><i data-lucide="rotate-ccw" style="width:15px;height:15px;"></i><span>سياسة الاسترداد</span></button>
+                </div>
+
+                <!-- TERMS -->
+                <div id="policyPane-terms" class="policy-pane" style="font-size:13.5px; color:var(--text-dim); line-height:2;">
+                    <h4 style="color:var(--gold-bright); font-size:15px; margin-bottom:8px;">أولاً: الشروط والأحكام العامة</h4>
+                    <ol style="padding-inline-start:20px;">
+                        <li>هذه البوابة مخصصة حصرياً لطلاب سنتر الأستاذة أمنية سعيد الحضوريين المسجلين فعلياً بأحد مقرات السنتر، ولا يجوز لطلاب الأونلاين أو غير المقيدين بالسنتر استخدامها.</li>
+                        <li>يلتزم الطالب بإدخال بياناته الحقيقية (الاسم الرباعي، أرقام الهاتف، الصورة الشخصية) وأي بيانات غير صحيحة قد يترتب عليها رفض الطلب أو إلغاء الحساب أو اتخاذ إجراءات قانونية.</li>
+                        <li>يبقى طلب القيد بحالة "قيد المراجعة" فور الإرسال، ولا يعتبر الحساب مفعلاً أو معتمداً إلا بعد مراجعته والموافقة عليه رسمياً من إدارة السنتر عبر لوحة التحكم.</li>
+                        <li>استمارة القيد الصادرة من البوابة وثيقة تفيد تقديم الطلب، ولا تُعد بديلاً عن اعتماد الإدارة النهائي لتفعيل الحساب على المنصة الرسمية.</li>
+                        <li>يحتفظ السنتر بحقه في رفض أي طلب لا يستوفي الشروط، أو تعليق أي حساب يثبت مخالفته لتعليمات الاستخدام، أو إساءة استخدام المنصة.</li>
+                        <li>تخضع بيانات الطلاب لسياسة الخصوصية المتبعة بالسنتر، ولا تُستخدم إلا لأغراض الإدارة والمتابعة التعليمية، ولا يتم مشاركتها مع أطراف خارجية دون موافقة صريحة.</li>
+                        <li>جميع المحتويات التعليمية (فيديوهات، مذكرات، اختبارات) هي ملكية فكرية خاصة بالسنتر والأستاذة أمنية سعيد، ولا يجوز نسخها أو إعادة توزيعها أو استخدامها لأغراض تجارية خارج نطاق المنصة.</li>
+                        <li>الطالب مسؤول عن الحفاظ على سرية كلمة المرور الخاصة بحسابه، وأي نشاط يتم من خلال حسابه يُعتبر مسؤولية الطالب.</li>
+                        <li>يحق للسنتر تعديل أي من هذه الشروط أو إضافة شروط جديدة، مع إشعار الطلاب عبر المنصة أو البوابة.</li>
+                    </ol>
+                </div>
+
+                <!-- PAYMENT -->
+                <div id="policyPane-payment" class="policy-pane" style="display:none; font-size:13.5px; color:var(--text-dim); line-height:2;">
+                    <h4 style="color:var(--gold-bright); font-size:15px; margin-bottom:8px;">ثانياً: سياسة الدفع والاشتراك</h4>
+                    <ol style="padding-inline-start:20px;">
+                        <li>قيمة الاشتراك الشهري الموحد هي <b style="color:var(--gold-bright);">50 جنيهاً مصرياً فقط</b>، تُسدد قبل بدء كل شهر دراسي جديد لتفعيل محتوى الشهر المختار.</li>
+                        <li>يتم السداد حصرياً عبر إنستاباي أو فودافون كاش على الرقم الموضح بالبوابة (01066781928)، ولا يُعتد بأي تحويل على أرقام أخرى.</li>
+                        <li>يلتزم الطالب برفع صورة واضحة لإيصال التحويل تظهر بها قيمة العملية وتاريخها ورقم المرجع، وإلا اعتُبر الطلب غير مكتمل.</li>
+                        <li>لا يُفعَّل الاشتراك أو يُمنح الوصول لمحتوى الشهر المختار إلا بعد تدقيق الإيصال والتأكد من مطابقته من إدارة السنتر.</li>
+                        <li>في حال اكتشاف إيصال غير صحيح أو مكرر أو لا يخص الطالب، يُرفض الطلب فوراً مع توضيح السبب للطالب.</li>
+                        <li>في حالة وجود أي خطأ في عملية الدفع (مثل خصم المبلغ دون وصوله للسنتر)، يُرجى التواصل مع الإدارة فوراً لإعادة التحقق.</li>
+                    </ol>
+                </div>
+
+                <!-- REFUND -->
+                <div id="policyPane-refund" class="policy-pane" style="display:none; font-size:13.5px; color:var(--text-dim); line-height:2;">
+                    <h4 style="color:var(--gold-bright); font-size:15px; margin-bottom:8px;">ثالثاً: سياسة الاسترداد</h4>
+                    <ol style="padding-inline-start:20px;">
+                        <li>في حال رفض طلب القيد لعدم مطابقة الإيصال أو الصورة، يحق للطالب استرداد قيمة الاشتراك المحول بالتواصل المباشر مع إدارة السنتر وإثبات التحويل.</li>
+                        <li>بعد اعتماد الحساب وتفعيل محتوى الشهر المختار، لا يُقبل استرداد قيمة الاشتراك عن ذلك الشهر نظراً لإتاحة المحتوى التعليمي فور التفعيل.</li>
+                        <li>في حالة الخصم المزدوج أو الخطأ التقني المؤكد من جانب المنصة، تتم مراجعة الحالة واسترداد المبلغ الزائد خلال مدة معقولة بعد التحقق.</li>
+                        <li>جميع طلبات الاسترداد تخضع لتقدير إدارة السنتر بعد مراجعة كل حالة على حدة، ويتم الرد على الطلب خلال 5 أيام عمل كحد أقصى.</li>
+                        <li>في حالة إلغاء الاشتراك من قبل الطالب بعد التفعيل، لا يحق له استرداد أي مبلغ.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtqP6tLqWcdEy0S2qmRvDnKwqEA4Wknpg",
+            authDomain: "zezo-d37db.firebaseapp.com",
+            projectId: "zezo-d37db",
+            storageBucket: "zezo-d37db.firebasestorage.app",
+            messagingSenderId: "220978296339",
+            appId: "1:220978296339:web:11683e8d291fdca6ba71e6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const appState = {
+            currentStep: 1,
+            selectedGrade: 'الصف الأول الثانوي',
+            selectedSubject: 'علوم متكاملة',
+            selectedCenter: 'سنتر البيان',
+            selectedCourse: null, // name of the selected course/month
+            selectedPayment: 'instapay',
+            studentPhotoBase64: null,
+            receiptPhotoBase64: null,
+            latestRegisteredData: null,
+            courses: [] // will hold all courses from Firestore
+        };
+
+        const GRADE_SUBJECTS = {
+            'الصف الأول الثانوي': ['علوم متكاملة'],
+            'الصف الثاني الثانوي': ['فيزياء', 'كيمياء'],
+            'الصف الثالث الثانوي': ['فيزياء', 'كيمياء']
+        };
+
+        function showToast(msg, type = 'info') {
+            const stack = document.getElementById('toastStack');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            stack.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function copyText(text, msg) {
+            navigator.clipboard.writeText(text).then(() => showToast(msg || 'تم النسخ بنجاح', 'success'));
+        }
+
+        function togglePasswordVisibility(id, btn) {
+            const el = document.getElementById(id);
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.innerHTML = '<i data-lucide="eye-off" style="width:18px;height:18px;"></i>';
+            } else {
+                el.type = 'password';
+                btn.innerHTML = '<i data-lucide="eye" style="width:18px;height:18px;"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function openRegistrationModal(grade, subject) {
+            if (grade) {
+                appState.selectedGrade = grade;
+                updateGradeSelectorUi();
+            }
+            if (subject) appState.selectedSubject = subject;
+            // Fetch courses before showing the modal
+            fetchCourses().then(() => {
+                goToStep(1);
+                document.getElementById('regModal').classList.add('active');
+                lucide.createIcons();
+            });
+        }
+        function closeRegistrationModal() { document.getElementById('regModal').classList.remove('active'); }
+        function openLookupModal() { document.getElementById('lookupModal').classList.add('active'); document.getElementById('lookupResultBox').style.display='none'; lucide.createIcons(); }
+        function closeLookupModal() { document.getElementById('lookupModal').classList.remove('active'); }
+
+        function openPoliciesModal(tab) {
+            switchPolicyTab(tab || 'terms');
+            document.getElementById('policiesModal').classList.add('active');
+            lucide.createIcons();
+        }
+        function closePoliciesModal() { document.getElementById('policiesModal').classList.remove('active'); }
+        function switchPolicyTab(tab) {
+            ['terms', 'payment', 'refund'].forEach(t => {
+                document.getElementById(`policyPane-${t}`).style.display = (t === tab) ? 'block' : 'none';
+                document.getElementById(`policyTabBtn-${t}`).classList.toggle('btn-gold', t === tab);
+            });
+        }
+        function closeStatusModal() { document.getElementById('statusModal').classList.remove('active'); }
+        function closeCertificateModal() { document.getElementById('certModal').classList.remove('active'); }
+
+        // ================= COURSES FETCHING =================
+        async function fetchCourses() {
+            try {
+                const snap = await db.collection('courses').get();
+                appState.courses = [];
+                snap.forEach(doc => appState.courses.push({ id: doc.id, ...doc.data() }));
+                // after fetching, update the month grid if step 2 is active
+                if (document.getElementById('stepPane2').classList.contains('active')) {
+                    updateMonthGrid();
+                }
+                return appState.courses;
+            } catch (e) {
+                console.error('[Fetch courses error]', e);
+                showToast('تعذر تحميل الأشهر المتاحة', 'error');
+                return [];
+            }
+        }
+
+        // ================= DYNAMIC MONTH GRID =================
+        function updateMonthGrid() {
+            const container = document.getElementById('monthDynamicGrid');
+            const grade = appState.selectedGrade;
+            // Filter courses: match grade or 'جميع الصفوف'
+            const availableCourses = appState.courses.filter(c => {
+                return c.grade === grade || c.grade === 'جميع الصفوف';
+            });
+
+            if (!availableCourses.length) {
+                container.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:18px; color:var(--text-dim);">
+                        <i data-lucide="alert-circle" style="width:22px;height:22px;display:block;margin:0 auto 6px;"></i>
+                        لا توجد شهور أو كورسات متاحة لهذا الصف حالياً. تواصل مع الإدارة.
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = availableCourses.map(c => `
+                <div class="option-choice-card ${appState.selectedCourse === c.name ? 'selected' : ''}" 
+                     onclick="selectCourse(this, '${c.name}')">
+                    <i data-lucide="calendar-days" class="choice-icon"></i>
+                    <h5 style="font-size:13px;">${c.name}</h5>
+                </div>
+            `).join('');
+
+            // If no course selected yet, select the first one
+            if (!appState.selectedCourse && availableCourses.length) {
+                appState.selectedCourse = availableCourses[0].name;
+                const firstCard = container.querySelector('.option-choice-card');
+                if (firstCard) firstCard.classList.add('selected');
+            }
+            lucide.createIcons();
+        }
+
+        function selectCourse(card, courseName) {
+            document.querySelectorAll('#monthDynamicGrid .option-choice-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            appState.selectedCourse = courseName;
+        }
+
+        // ================= STEP NAVIGATION =================
+        function goToStep(step) {
+            if (step > 1 && !validateCurrentStep(appState.currentStep)) return;
+            appState.currentStep = step;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`stepPill${i}`).className = i === step ? 'step-pill active' : (i < step ? 'step-pill completed' : 'step-pill');
+                const pane = document.getElementById(`stepPane${i}`);
+                if (i === step) pane.classList.add('active'); else pane.classList.remove('active');
+            }
+            document.getElementById('stepperFill').style.width = `${((step - 1) / 3) * 100}%`;
+            if (step === 2) {
+                // refresh month grid in case courses changed
+                updateMonthGrid();
+            }
+            if (step === 4) populateReviewData();
+            document.getElementById('regModal').querySelector('.modal-card').scrollTop = 0;
+            lucide.createIcons();
+        }
+
+        function validateCurrentStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('inpFullName').value.trim();
+                const sPhone = document.getElementById('inpStudentPhone').value.trim();
+                const pPhone = document.getElementById('inpParentPhone').value.trim();
+                const pwd = document.getElementById('inpPassword').value.trim();
+                const phoneReg = /^01[0125][0-9]{8}$/;
+
+                if (!name || name.split(' ').length < 3) { showToast('يرجى إدخال اسم الطالب ثلاثي أو رباعي بالعربية', 'error'); return false; }
+                if (!phoneReg.test(sPhone)) { showToast('رقم هاتف الطالب غير صحيح (11 رقم يبدأ بـ 01)', 'error'); return false; }
+                if (!phoneReg.test(pPhone)) { showToast('رقم هاتف ولي الأمر غير صحيح (11 رقم يبدأ بـ 01)', 'error'); return false; }
+                if (sPhone === pPhone) { showToast('يجب أن يختلف رقم ولي الأمر عن رقم الطالب', 'error'); return false; }
+                if (!pwd || pwd.length < 5) { showToast('يرجى تعيين كلمة مرور من 5 خانات على الأقل', 'error'); return false; }
+                if (!appState.studentPhotoBase64) { showToast('يرجى إرفاق الصورة الشخصية الرسمية للطالب', 'error'); return false; }
+                return true;
+            }
+            if (step === 2) {
+                if (!appState.selectedCourse) {
+                    showToast('يرجى اختيار الشهر / الكورس الذي ترغب في الاشتراك به', 'error');
+                    return false;
+                }
+                return true;
+            }
+            if (step === 3 && !appState.receiptPhotoBase64) {
+                showToast('يرجى إرفاق صورة إيصال التحويل (50 ج.م)', 'error'); return false;
+            }
+            return true;
+        }
+
+        // ================= GRADE / SUBJECT / CENTER SELECTORS =================
+        function selectGrade(card, grade) {
+            document.querySelectorAll('#gradeSelectorGrid .option-choice-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            appState.selectedGrade = grade;
+            const subs = GRADE_SUBJECTS[grade] || ['فيزياء'];
+            appState.selectedSubject = subs[0];
+            const subGrid = document.getElementById('subjectSelectorGrid');
+            subGrid.innerHTML = subs.map((s, idx) => `
+                <div class="option-choice-card ${idx===0?'selected':''}" onclick="selectSubject(this, '${s}')">
+                    <i data-lucide="${s==='فيزياء'?'atom':'flask-conical'}" class="choice-icon"></i><h5>${s}</h5>
+                </div>
+            `).join('');
+            // Reset course selection and update grid
+            appState.selectedCourse = null;
+            updateMonthGrid();
+            lucide.createIcons();
+        }
+
+        function updateGradeSelectorUi() {
+            document.querySelectorAll('#gradeSelectorGrid .option-choice-card').forEach(c => {
+                if (c.querySelector('h5').textContent.trim() === appState.selectedGrade) c.classList.add('selected');
+                else c.classList.remove('selected');
+            });
+            const subs = GRADE_SUBJECTS[appState.selectedGrade] || ['فيزياء'];
+            appState.selectedSubject = subs[0];
+            const subGrid = document.getElementById('subjectSelectorGrid');
+            subGrid.innerHTML = subs.map((s, idx) => `
+                <div class="option-choice-card ${idx===0?'selected':''}" onclick="selectSubject(this, '${s}')">
+                    <i data-lucide="${s==='فيزياء'?'atom':'flask-conical'}" class="choice-icon"></i><h5>${s}</h5>
+                </div>
+            `).join('');
+            appState.selectedCourse = null;
+            updateMonthGrid();
+            lucide.createIcons();
+        }
+
+        function selectSubject(card, sub) {
+            document.querySelectorAll('#subjectSelectorGrid .option-choice-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            appState.selectedSubject = sub;
+        }
+
+        function selectCenter(card, center) {
+            document.querySelectorAll('#centerSelectorGrid .option-choice-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            appState.selectedCenter = center;
+        }
+
+        function selectPaymentMethod(card, method) {
+            document.querySelectorAll('.payment-method-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            appState.selectedPayment = method;
+        }
+
+        // ================= PHOTO HANDLING =================
+        function handleStudentPhoto(file) {
+            if (!file) return;
+            compressImage(file, 800, 0.78).then(b64 => {
+                appState.studentPhotoBase64 = b64;
+                const img = document.getElementById('photoPreviewImg');
+                img.src = b64; img.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                showToast('تم إرفاق الصورة بنجاح', 'success');
+            });
+        }
+
+        function handleReceiptPhoto(file) {
+            if (!file) return;
+            compressImage(file, 900, 0.75).then(b64 => {
+                appState.receiptPhotoBase64 = b64;
+                const img = document.getElementById('receiptPreviewImg');
+                img.src = b64; img.style.display = 'block';
+                document.getElementById('receiptPlaceholder').style.display = 'none';
+                showToast('تم إرفاق الإيصال بنجاح', 'success');
+            });
+        }
+
+        function compressImage(file, maxDim, quality) {
+            return new Promise((res) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                        else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        res(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ================= REVIEW DATA =================
+        function populateReviewData() {
+            document.getElementById('revFullName').textContent = document.getElementById('inpFullName').value.trim();
+            document.getElementById('revStudentPhone').textContent = document.getElementById('inpStudentPhone').value.trim();
+            document.getElementById('revParentPhone').textContent = document.getElementById('inpParentPhone').value.trim();
+            document.getElementById('revGrade').textContent = appState.selectedGrade;
+            document.getElementById('revSubject').textContent = appState.selectedSubject;
+            document.getElementById('revCenter').textContent = appState.selectedCenter;
+            document.getElementById('revMonth').textContent = appState.selectedCourse || 'لم يتم الاختيار';
+        }
+
+        // ================= SUBMIT REGISTRATION =================
+        async function submitStudentRegistration() {
+            if (!document.getElementById('inpAgreeTerms').checked) {
+                showToast('يرجى الموافقة على الشروط والأحكام وسياسة الدفع والاسترداد أولاً', 'error');
+                return;
+            }
+            const btn = document.getElementById('btnSubmitRegistration');
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> جاري حفظ وإرسال البيانات...';
+            lucide.createIcons();
+
+            try {
+                const fullName = document.getElementById('inpFullName').value.trim();
+                const studentPhone = document.getElementById('inpStudentPhone').value.trim();
+                const parentPhone = document.getElementById('inpParentPhone').value.trim();
+                const password = document.getElementById('inpPassword').value.trim();
+
+                let studentCode = 1001;
+                let serialNumber = 1;
+
+                const counterRef = db.collection('settings').doc('counters');
+                try {
+                    await db.runTransaction(async (tx) => {
+                        const snap = await tx.get(counterRef);
+                        if (!snap.exists) {
+                            tx.set(counterRef, { studentCode: 1001, serialNumber: 1 });
+                        } else {
+                            const d = snap.data();
+                            studentCode = (d.studentCode || 1000) + 1;
+                            serialNumber = (d.serialNumber || 0) + 1;
+                            tx.update(counterRef, { studentCode, serialNumber });
+                        }
+                    });
+                } catch (e) {
+                    studentCode = 1000 + Math.floor(Math.random() * 8999);
+                    serialNumber = Math.floor(1 + Math.random() * 500);
+                }
+
+                const formattedSerial = 'SN-' + String(serialNumber).padStart(5, '0');
+                const orderNumber = 'REQ-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
+
+                let studentDocId = 'st-' + Date.now();
+                try {
+                    const stQuery = await db.collection('students').where('phone', '==', studentPhone).get();
+                    if (stQuery.empty) {
+                        const newStDoc = await db.collection('students').add({
+                            name: fullName, phone: studentPhone, parentPhone: parentPhone,
+                            grade: appState.selectedGrade, subject: appState.selectedSubject, center: appState.selectedCenter,
+                            studentCode: studentCode, serialNumber: formattedSerial, photoUrl: appState.studentPhotoBase64,
+                            password: password, monthlyFee: 50,
+                            requestedCourseName: appState.selectedCourse,
+                            activeCourseName: null, status: 'PENDING',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        studentDocId = newStDoc.id;
+                    } else {
+                        studentDocId = stQuery.docs[0].id;
+                        studentCode = stQuery.docs[0].data().studentCode || studentCode;
+                    }
+                } catch (e) {}
+
+                const orderData = {
+                    orderNumber, serialNumber: formattedSerial, studentId: studentDocId, studentCode,
+                    studentName: fullName, phone: studentPhone, parentPhone, password,
+                    grade: appState.selectedGrade, subject: appState.selectedSubject, center: appState.selectedCenter,
+                    requestedCourseName: appState.selectedCourse,
+                    coursePrice: 50, monthlyFee: 50, paymentMethod: appState.selectedPayment,
+                    paymentStatus: 'PENDING', photoUrl: appState.studentPhotoBase64, receiptUrl: appState.receiptPhotoBase64,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection('orders').add(orderData);
+                appState.latestRegisteredData = orderData;
+
+                closeRegistrationModal();
+                document.getElementById('submittedSerialNum').textContent = formattedSerial;
+                document.getElementById('submittedStudentCode').textContent = studentCode;
+                document.getElementById('submittedMonthName').textContent = appState.selectedCourse || '-';
+                document.getElementById('statusModal').classList.add('active');
+                lucide.createIcons();
+                showToast('تم تقديم طلب القيد بنجاح!', 'success');
+
+            } catch (err) {
+                console.error(err);
+                showToast('حدث خطأ أثناء إرسال الطلب، حاول ثانية', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="send"></i><span>تأكيد وإرسال طلب القيد</span>';
+                lucide.createIcons();
+            }
+        }
+
+        // ================= CERTIFICATE =================
+        function openCertificateModalFromCurrent() {
+            if (!appState.latestRegisteredData) return;
+            populateCertificate(appState.latestRegisteredData);
+            document.getElementById('certModal').classList.add('active');
+            lucide.createIcons();
+        }
+
+        function populateCertificate(data) {
+            document.getElementById('certSerialDisplay').textContent = data.serialNumber || 'SN-00001';
+            document.getElementById('certDateDisplay').textContent = `التاريخ: ${new Date().toLocaleDateString('ar-EG')}`;
+            document.getElementById('certFullName').textContent = data.studentName || '-';
+            document.getElementById('certStudentPhone').textContent = data.phone || '-';
+            document.getElementById('certParentPhone').textContent = data.parentPhone || '-';
+            document.getElementById('certGrade').textContent = data.grade || '-';
+            document.getElementById('certSubject').textContent = data.subject || '-';
+            document.getElementById('certCenter').textContent = data.center || '-';
+            document.getElementById('certCourseName').textContent = data.requestedCourseName || '-';
+            document.getElementById('certStudentCode').textContent = data.studentCode || '1001';
+
+            if (data.photoUrl) document.getElementById('certStudentPhoto').src = data.photoUrl;
+
+            try {
+                JsBarcode("#certBarcodeSvg", String(data.serialNumber || data.studentCode || "00001"), {
+                    format: "CODE128", lineColor: "#356B7A", width: 2, height: 36, displayValue: true, fontSize: 11
+                });
+            } catch (e) {}
+
+            try {
+                const qrContainer = document.getElementById('certQrContainer');
+                qrContainer.innerHTML = '';
+                new QRCode(qrContainer, {
+                    text: `OMNIA-SAEED|${data.studentCode}|${data.serialNumber}|${data.studentName}`,
+                    width: 60, height: 60, colorDark: "#356B7A", colorLight: "#ffffff"
+                });
+            } catch (e) {}
+        }
+
+        async function downloadCertificateAsImage() {
+            const btn = document.getElementById('btnDownloadCertPng');
+            btn.disabled = true; btn.textContent = 'جاري التحميل...';
+            try {
+                const element = document.getElementById('officialCertificate');
+                const canvas = await html2canvas(element, { scale: 2.2, useCORS: true, scrollX: 0, scrollY: 0 });
+                const link = document.createElement('a');
+                link.download = `استمارة_قيد_${document.getElementById('certSerialDisplay').textContent || '00001'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('تم تحميل الاستمارة بنجاح!', 'success');
+            } catch (e) {
+                showToast('تعذر تحميل الصورة، استخدم زر الطباعة', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="download"></i><span>تحميل كصورة (PNG)</span>';
+                lucide.createIcons();
+            }
+        }
+
+        // ================= LOOKUP & DIRECT PLATFORM LOGIN =================
+        async function performLookupQuery() {
+            const phone = document.getElementById('lookupPhone').value.trim();
+            const code = document.getElementById('lookupCode').value.trim();
+            if (!phone || !code) { showToast('يرجى إدخال الهاتف وكود الطالب أو السيريال', 'error'); return; }
+
+            const btn = document.getElementById('btnLookupSubmit');
+            btn.disabled = true; btn.textContent = 'جاري فحص الحساب...';
+
+            try {
+                const snap = await db.collection('orders').where('phone', '==', phone).get();
+                const resBox = document.getElementById('lookupResultBox');
+                resBox.style.display = 'block';
+
+                if (snap.empty) {
+                    resBox.innerHTML = '<p style="color:var(--rose);text-align:center;font-weight:700;">لم يتم العثور على أي طلب مسجل بهذا الهاتف</p>';
+                    return;
+                }
+
+                let docs = [];
+                snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                let matched = docs.find(d => String(d.studentCode) === code || String(d.serialNumber).includes(code)) || docs[0];
+
+                let activeCourseTitle = matched.activeCourseName || matched.requestedCourseName || 'الشهر الأول';
+                try {
+                    const settingSnap = await db.collection('settings').doc('active_course').get();
+                    if (settingSnap.exists && settingSnap.data().name) {
+                        activeCourseTitle = settingSnap.data().name;
+                    }
+                } catch(e) {}
+
+                if (matched.paymentStatus === 'APPROVED') {
+                    resBox.innerHTML = `
+                        <div style="background:rgba(16,185,129,0.1); border:1.5px solid var(--emerald); border-radius:12px; padding:18px; text-align:right;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                <span style="background:var(--emerald); color:#fff; font-size:12px; font-weight:900; padding:3px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:5px;">
+                                    <i data-lucide="badge-check" style="width:13px;height:13px;"></i> تم تفعيل واعتماد حسابك بنجاح!
+                                </span>
+                                <span style="font-size:12px; color:var(--text-dim);">السيريال: <b>${matched.serialNumber || 'SN-00001'}</b></span>
+                            </div>
+
+                            <h4 style="font-size:17px; margin-bottom:4px; color:var(--text-main);">${matched.studentName}</h4>
+                            <p style="font-size:13px; color:var(--cyan); font-weight:700; margin-bottom:14px;">
+                                تم تسجيلك وتفعيل محتوى: <b style="color:var(--gold-bright); font-size:14.5px;">${activeCourseTitle}</b>
+                            </p>
+
+                            <div style="background:var(--bg-input); border:1px solid var(--border-main); padding:14px; border-radius:8px; margin-bottom:16px;">
+                                <div style="font-size:12.5px; color:var(--text-dim); margin-bottom:6px; font-weight:700;">بيانات تسجيل الدخول إلى المنصة الرسمية:</div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:13.5px;">
+                                    <span style="display:flex; align-items:center; gap:5px;"><i data-lucide="smartphone" style="width:14px;height:14px;color:var(--cyan);"></i> رقم الهاتف:</span>
+                                    <b style="font-family:monospace; color:var(--cyan);">${matched.phone}</b>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13.5px;">
+                                    <span style="display:flex; align-items:center; gap:5px;"><i data-lucide="key-round" style="width:14px;height:14px;color:var(--gold-bright);"></i> كلمة المرور:</span>
+                                    <b style="font-family:monospace; color:var(--gold-bright);">${matched.password || 'التي قمت بتعيينها'}</b>
+                                </div>
+                            </div>
+
+                            <a href="https://www.omnia-said.com" target="_blank" class="btn btn-emerald btn-block" style="margin-bottom:10px; font-size:15px;">
+                                <i data-lucide="log-in"></i>
+                                <span>الدخول إلى المنصة الرسمية (www.omnia-said.com)</span>
+                            </a>
+
+                            <button class="btn btn-glass btn-sm btn-block" onclick="openCertFromLookup('${matched.id}')">
+                                <i data-lucide="file-badge" style="width:14px;height:14px;"></i>
+                                <span>عرض وتحميل استمارة القيد</span>
+                            </button>
+                        </div>
+                    `;
+                } else if (matched.paymentStatus === 'REJECTED') {
+                    resBox.innerHTML = `
+                        <div style="background:rgba(239,68,68,0.1); border:1.5px solid var(--rose); border-radius:12px; padding:18px;">
+                            <h4 style="color:var(--rose); margin-bottom:6px;">تم رفض طلب القيد</h4>
+                            <p style="font-size:13px; margin-bottom:12px;">سبب الرفض: <b>${matched.rejectionReason || 'الإيصال أو الصورة غير مطابقة'}</b></p>
+                            <button class="btn btn-gold btn-sm btn-block" onclick="openRegistrationModal()">إعادة تقديم الطلب</button>
+                        </div>
+                    `;
+                } else {
+                    resBox.innerHTML = `
+                        <div style="background:var(--bg-input); border:1px solid var(--gold-border); border-radius:12px; padding:18px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span>السيريال: <b>${matched.serialNumber || 'SN-00001'}</b></span>
+                                <span style="color:var(--gold-bright); font-weight:800; display:inline-flex; align-items:center; gap:5px;"><i data-lucide="clock-4" style="width:14px;height:14px;"></i> طلبك قيد المراجعة والتدقيق</span>
+                            </div>
+                            <h4 style="margin-bottom:4px;">${matched.studentName}</h4>
+                            <p style="font-size:13px; color:var(--text-dim); margin-bottom:6px;">الشهر الذي طلبت تفعيله: <b style="color:var(--gold-bright);">${matched.requestedCourseName || '-'}</b></p>
+                            <p style="font-size:12.5px; color:var(--text-dim); margin-bottom:14px;">جاري مراجعة إيصال الـ 50 ج والصورة. لن يظهر حسابك "مُفعّلاً" إلا بعد اعتماد الإدارة رسمياً من لوحة التحكم.</p>
+                            <button class="btn btn-gold btn-sm btn-block" onclick="openCertFromLookup('${matched.id}')">عرض استمارة القيد</button>
+                        </div>
+                    `;
+                }
+
+                appState.lookupMatchedOrder = matched;
+                lucide.createIcons();
+            } catch (e) {
+                showToast('حدث خطأ أثناء الاستعلام', 'error');
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i data-lucide="search"></i><span>فحص حالة الحساب</span>';
+                lucide.createIcons();
+            }
+        }
+
+        function openCertFromLookup(id) {
+            if (appState.lookupMatchedOrder) {
+                populateCertificate(appState.lookupMatchedOrder);
+                closeLookupModal();
+                document.getElementById('certModal').classList.add('active');
+                lucide.createIcons();
+            }
+        }
+
+        // ================= THEME =================
+        function initTheme() {
+            const toggle = document.getElementById('themeToggleBtn');
+            toggle.addEventListener('click', () => {
+                const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+                const nxt = cur === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', nxt);
+                toggle.querySelector('.light-icon').style.display = nxt === 'light' ? 'block' : 'none';
+                toggle.querySelector('.dark-icon').style.display = nxt === 'dark' ? 'block' : 'none';
+            });
+        }
+
+        // ================= CANVAS (Chemistry Network) =================
+        function initCanvas() {
+            const c = document.getElementById('chemistryNetwork');
+            if (!c) return;
+            const ctx = c.getContext('2d');
+            let pts = [];
+            function rsz() { c.width = window.innerWidth; c.height = window.innerHeight; }
+            window.addEventListener('resize', rsz); rsz();
+
+            for (let i = 0; i < 40; i++) {
+                pts.push({
+                    x: Math.random() * c.width, y: Math.random() * c.height,
+                    vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+                    color: Math.random() > 0.5 ? '#356B7A' : '#C9A96E'
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, c.width, c.height);
+                pts.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > c.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > c.height) p.vy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color; ctx.fill();
+                });
+                for (let i = 0; i < pts.length; i++) {
+                    for (let j = i + 1; j < pts.length; j++) {
+                        let d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+                        if (d < 110) {
+                            ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
+                            ctx.strokeStyle = `rgba(53, 107, 122, ${1 - d / 110})`; ctx.lineWidth = 0.7; ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // ================= INIT =================
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initTheme();
+            initCanvas();
+            // Pre-fetch courses
+            fetchCourses();
+        });
+    </script>
+</body>
+</html>
